@@ -1,4 +1,7 @@
+from functools import partial
 from lxml import etree
+
+from .common import compose
 
 
 class MissingFieldException(Exception):
@@ -39,13 +42,24 @@ class SurveyTree(object):
             if field.tag not in self.NOT_RELEVANT
         ]
 
+    def _get_matching_fields(self, condition_func):
+        """Return fields that match condition"""
+        return iter(filter(condition_func, self.get_fields()))
+
+    @staticmethod
+    def _get_fst_el(name, iterator):
+        try:
+            return next(iterator)
+        except StopIteration:
+            raise MissingFieldException("Element '{}' does not exist in "
+                                        "survey tree".format(name))
+
     def get_field(self, name):
         """Get field Element by name."""
-        fields = self.get_fields()
-        for field in fields:
-            if field.tag == name:
-                return field
-        raise MissingFieldException("Field name '{}' does not exist in survey tree".format(name))
+        return compose(
+            partial(self._get_fst_el, name),
+            self._get_matching_fields,
+        )(lambda f: f.tag == name)
 
     def create_element(self, field_name):
         return etree.XML('<{name}></{name}>'.format(name=field_name))
@@ -54,15 +68,44 @@ class SurveyTree(object):
         """WARNING: It is not possible to revert this operation"""
         field = self.get_field(field_name)
         field.getparent().remove(field)
+        return field
 
     def modify_field(self, field_name, new_tag):
         field = self.get_field(field_name)
         field.tag = new_tag
 
-    def add_field(self, field_name, text=''):
+    def add_field(self, field_name, text='', parent=None):
+        parent = parent or self.root
         try:
-            self.get_field(field_name)
+            field = self.get_field(field_name)
         except MissingFieldException:
             field = self.create_element(field_name)
             field.text = text
-            self.root.append(field)
+            parent.append(field)
+        return field
+
+    def find_group(self, group_name):
+        """Find group named :group_name: or throw exception"""
+        return compose(
+            partial(self._get_fst_el, group_name),
+            iter,
+            partial(filter, lambda e: e.getchildren != []),
+            self._get_matching_fields,
+        )(lambda f: f.tag == group_name)
+
+    def insert_field_into_group_chain(self, field, group_chain):
+        """Insert field into a chain of groups. Function handle group field
+        creation if one does not exist
+        """
+        assert etree.iselement(field)
+        group_chain = iter(group_chain)
+
+        def aux(parent):
+            group = next(group_chain, None)
+            if group is None:
+                parent.append(field)
+                return field
+            group_field = self.add_field(group, parent=parent)
+            return aux(group_field)
+
+        return aux(self.root)
