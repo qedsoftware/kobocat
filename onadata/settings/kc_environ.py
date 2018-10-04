@@ -126,6 +126,7 @@ AWS_ACCESS_KEY_ID = os.environ.get('KOBOCAT_AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('KOBOCAT_AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('KOBOCAT_AWS_STORAGE_BUCKET_NAME')
 AWS_DEFAULT_ACL = 'private'
+AWS_S3_FILE_BUFFER_SIZE = 50 * 1024 * 1024
 
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get("GOOGLE_ANALYTICS_TOKEN", False)
 GOOGLE_ANALYTICS_DOMAIN = "auto"
@@ -267,3 +268,6 @@ if ISSUE_242_MINIMUM_INSTANCE_ID is not None:
             }
     }
 ###### END ISSUE 242 FIX ######
+
+# Number of times Celery retries to send data to external rest service
+REST_SERVICE_MAX_RETRIES = 3

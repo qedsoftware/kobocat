@@ -115,6 +115,7 @@ ENKETO_PREVIEW_URL = ENKETO_URL + ENKETO_API_ENDPOINT_PREVIEW
 ENKETO_API_INSTANCE_IFRAME_URL = ENKETO_URL + ENKETO_API_ROOT + ENKETO_API_ENDPOINT_INSTANCE_IFRAME
 
 KPI_URL = os.environ.get('KPI_URL', False)
+KPI_INTERNAL_URL = os.environ.get("KPI_INTERNAL_URL", KPI_URL)
 
 # specifically for site urls sent to enketo for form retrieval
 # `ENKETO_PROTOCOL` variable is overridden when internal domain name is used.
@@ -482,7 +483,7 @@ CELERYD_TASK_SOFT_TIME_LIMIT = int(os.environ.get(
     'CELERYD_TASK_SOFT_TIME_LIMIT', 1800))
 
 # duration to keep zip exports before deletion (in seconds)
-ZIP_EXPORT_COUNTDOWN = 3600  # 1 hour
+ZIP_EXPORT_COUNTDOWN = 24 * 60 * 60
 
 # default content length for submission requests
 DEFAULT_CONTENT_LENGTH = 10000000

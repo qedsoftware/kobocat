@@ -3,6 +3,8 @@ from hashlib import sha256
 
 import reversion
 
+from django.db.models import F
+from django.db import transaction
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
@@ -21,6 +23,7 @@ from onadata.libs.utils.common_tags import ATTACHMENTS, BAMBOO_DATASET_ID,\
     DELETEDAT, GEOLOCATION, ID, MONGO_STRFTIME, NOTES, SUBMISSION_TIME, TAGS,\
     UUID, XFORM_ID_STRING, SUBMITTED_BY
 from onadata.libs.utils.model_tools import set_uuid
+from onadata.apps.logger.fields import LazyDefaultBooleanField
 
 
 class FormInactiveError(Exception):
@@ -60,21 +63,25 @@ def submission_time():
 
 
 def update_xform_submission_count(sender, instance, created, **kwargs):
-    if created:
-        xform = XForm.objects.select_related().select_for_update()\
-            .get(pk=instance.xform.pk)
-        xform.num_of_submissions += 1
-        xform.last_submission_time = instance.date_created
-        xform.save()
-        profile_qs = User.profile.get_queryset()
-        try:
-            profile = profile_qs.select_for_update()\
-                .get(pk=xform.user.profile.pk)
-        except profile_qs.model.DoesNotExist:
-            pass
-        else:
-            profile.num_of_submissions += 1
-            profile.save()
+    if not created:
+        return
+    with transaction.atomic():
+        xform = XForm.objects.only('user_id').get(pk=instance.xform_id)
+        # Update with `F` expression instead of `select_for_update` to avoid
+        # locks, which were mysteriously piling up during periods of high
+        # traffic
+        XForm.objects.filter(pk=instance.xform_id).update(
+            num_of_submissions=F('num_of_submissions') + 1,
+            last_submission_time=instance.date_created,
+        )
+        # Hack to avoid circular imports
+        UserProfile = User.profile.related.related_model
+        profile, created = UserProfile.objects.only('pk').get_or_create(
+            user_id=xform.user_id
+        )
+        UserProfile.objects.filter(pk=profile.pk).update(
+            num_of_submissions=F('num_of_submissions') + 1,
+        )
 
 
 def update_xform_submission_count_delete(sender, instance, **kwargs):
@@ -136,6 +143,13 @@ class Instance(models.Model):
     tags = TaggableManager()
 
     validation_status = JSONField(null=True, default=None)
+
+    # TODO Don't forget to update all records with command `update_is_sync_with_mongo`.
+    is_synced_with_mongo = LazyDefaultBooleanField(default=False)
+
+    # If XForm.has_kpi_hooks` is True, this field should be True either.
+    # It tells whether the instance has been successfully sent to KPI.
+    posted_to_kpi = LazyDefaultBooleanField(default=False)
 
     class Meta:
         app_label = 'logger'
@@ -355,10 +369,7 @@ class Instance(models.Model):
             return gc[0]
 
     def save(self, *args, **kwargs):
-        force = kwargs.get('force')
-
-        if force:
-            del kwargs['force']
+        force = kwargs.pop("force", False)
 
         self._check_active(force)
 

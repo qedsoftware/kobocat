@@ -155,8 +155,6 @@ urlpatterns = patterns(
         kwargs={'export_type': 'sav_zip'}),
     url(r"^(?P<username>\w+)/forms/(?P<id_string>[^/]+)/data\.kml$",
         'onadata.apps.viewer.views.kml_export'),
-    url(r"^(?P<username>\w+)/forms/(?P<id_string>[^/]+)/data\.zip",
-        'onadata.apps.viewer.views.zip_export'),
     url(r"^(?P<username>\w+)/forms/(?P<id_string>[^/]+)/gdocs$",
         'onadata.apps.viewer.views.google_xls_export'),
     url(r"^(?P<username>\w+)/forms/(?P<id_string>[^/]+)/map_embed",
@@ -188,8 +186,6 @@ urlpatterns = patterns(
     url(r"^(?P<username>\w+)/exports/(?P<id_string>[^/]+)/(?P<export_type>\w+)"
         "/(?P<filename>[^/]+)$",
         'onadata.apps.viewer.views.export_download'),
-    url(r'^(?P<username>\w+)/forms/(?P<form_id_string>[^/]+)/spss_labels\.zip$',
-        'onadata.apps.logger.views.download_spss_labels', name='download_spss_labels'),
     url(r'^(?P<username>\w+)/exports/', include('onadata.apps.export.urls')),
 
     url(r'^(?P<username>\w+)/reports/', include('onadata.apps.survey_report.urls')),
