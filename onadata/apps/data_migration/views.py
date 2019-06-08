@@ -41,6 +41,7 @@ class DataMigrationEndpoint(APIView):
         }
         update_xform_results = _update_xform(**update_xform_data)
         success = update_xform_results.pop('success')
+        text = update_xform_results.pop('text')
         if success:
             decisions = json.loads(request.POST['json'])
             update_xform_results['migration_decisions'] = decisions
@@ -48,7 +49,7 @@ class DataMigrationEndpoint(APIView):
             return Response({'info': 'Form updated successfully'})
         else:
             _abandon_migration_handler(**update_xform_results)
-            return Response({'info': 'Could not update xform'}, status=500)
+            return Response({'info': 'Could not update xform. {}'.format(text)}, status=500)
 
 
 @is_owner
@@ -109,6 +110,7 @@ def _update_xform(request, username, id_string, add_message=True):
     # except clauses in order to catch all set_form() errors.
     return {
         'success': message['type'] == 'alert-success',
+        'text': message['text'],
         'username': username,
         'old_id_string': old_xform.id_string,
         'new_id_string': id_string,
