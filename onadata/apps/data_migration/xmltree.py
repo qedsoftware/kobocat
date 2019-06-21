@@ -1,3 +1,4 @@
+import re
 from functools import partial
 from itertools import ifilter
 from lxml import etree
@@ -53,6 +54,10 @@ class XMLTree(object):
     def _get_matching_elems(self, condition_func):
         """Return elems that match condition"""
         return ifilter(condition_func, self.get_all_elems())
+
+    @staticmethod
+    def is_leaf(element):
+        return len(element.getchildren()) == 0
 
     @classmethod
     def retrieve_leaf_elems(cls, element):
@@ -134,3 +139,8 @@ class XMLTree(object):
     @classmethod
     def field_tag(cls, field):
         return cls.clean_tag(field.tag)
+
+    @classmethod
+    def are_elements_equal(cls, e1, e2):
+        to_str = lambda el: re.sub(r"\s+", "", etree.tostring(el))
+        return to_str(e1) == to_str(e2)

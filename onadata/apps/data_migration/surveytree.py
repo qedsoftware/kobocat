@@ -88,3 +88,24 @@ class SurveyTree(XMLTree):
         for el in sorted(tree, key=lambda e: order.index(e.tag)):
             tree.remove(el)
             tree.append(el)
+
+    def remove_duplicates(self):
+        """
+        Remove duplicated fields from the xml tree. It assumes that
+        fields in the tree are sorted
+        """
+        self._remove_duplicates(self.root)
+
+    @classmethod
+    def _remove_duplicates(cls, tree):
+        if cls.is_leaf(tree):
+            return
+        prev_el, next_el = tree[0], tree[0]
+        for next_el in tree[1:]:
+            are_leaves = cls.is_leaf(prev_el) and cls.is_leaf(next_el)
+            if are_leaves and cls.are_elements_equal(prev_el, next_el):
+                tree.remove(prev_el)
+            else:
+                cls._remove_duplicates(prev_el)
+            prev_el = next_el
+        cls._remove_duplicates(next_el)

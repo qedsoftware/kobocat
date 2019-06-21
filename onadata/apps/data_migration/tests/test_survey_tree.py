@@ -157,6 +157,41 @@ class SurveyTreeOperationsTest(CommonTestCase):
                              fixtures.survey_3_after_migration_sorted)
 
 
+    def test_remove_duplicates(self):
+        survey_tree = SurveyTree("""
+            <Survey>
+                <element>value</element>
+                <element>value</element>
+                <nested>
+                    <happy_little_tag>content</happy_little_tag>
+                    <should_be_removed id="a">content</should_be_removed>
+                    <should_be_removed id="a">content</should_be_removed>
+                    <should_be_removed id="a">content</should_be_removed>
+                    <should_be_removed id="a">content</should_be_removed>
+                </nested>
+                <leave_intact/>
+                <meta>value1</meta>
+                <meta>value2</meta>
+                <meta>value2</meta>
+                <meta id="x">value2</meta>
+            </Survey>
+        """)
+        survey_tree.remove_duplicates()
+        self.assertXMLsEqual(survey_tree.to_string(), '''
+            <Survey>
+                <element>value</element>
+                <nested>
+                    <happy_little_tag>content</happy_little_tag>
+                    <should_be_removed id="a">content</should_be_removed>
+                </nested>
+                <leave_intact/>
+                <meta>value1</meta>
+                <meta>value2</meta>
+                <meta id="x">value2</meta>
+            </Survey>
+        ''')
+
+
 class SurveyTreeWithGroupsOperationsTest(CommonTestCase):
     def setUp(self):
         super(SurveyTreeWithGroupsOperationsTest, self).setUp()
