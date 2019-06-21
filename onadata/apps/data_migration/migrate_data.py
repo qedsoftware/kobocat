@@ -59,8 +59,9 @@ class DataMigrator(object):
 
 class SurveyFieldsHandler(object):
     """Handle fields operations."""
-    def __init__(self, migration_decisioner):
+    def __init__(self, migration_decisioner, xformtree):
         self.decisioner = migration_decisioner
+        self.xformtree = xformtree
 
     def alter_fields(self, survey_tree):
         self.add_fields(survey_tree, self.decisioner.new_fields)

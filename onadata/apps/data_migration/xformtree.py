@@ -11,6 +11,8 @@ class XFormTree(XMLTree):
     xls forms: http://xlsform.org/
     w3c xforms: https://www.w3.org/MarkUp/Forms/#waXForms
     """
+    DATA_STRUCT_PATH = ["head", "model", "instance"]
+
     def find_element_in_tree(self, searched_tag):
         query = "//*[local-name()='%s']" % self.clean_tag(searched_tag)
         try:

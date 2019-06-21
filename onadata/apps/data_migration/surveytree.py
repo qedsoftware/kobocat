@@ -2,12 +2,9 @@ from functools import partial
 from itertools import ifilter
 from lxml import etree
 
-from .xmltree import XMLTree
+from .xmltree import XMLTree, MissingFieldException
+from .xformtree import XFormTree
 from .common import compose, concat_map
-
-
-class MissingFieldException(Exception):
-    pass
 
 
 class SurveyTree(XMLTree):
@@ -20,52 +17,6 @@ class SurveyTree(XMLTree):
             self.root = etree.XML(survey.xml)
         except AttributeError:
             self.root = etree.XML(survey)
-
-    def get_fields(self):
-        """Parse and return list of all fields in form."""
-        return self.retrieve_leaf_elems(self.root)
-
-    def get_groups(self):
-        return concat_map(self.retrieve_groups, self.root.getchildren())
-
-    def get_all_elems(self):
-        """Return a list of both groups and fields"""
-        return concat_map(self.retrieve_all_elems, self.root.getchildren())
-
-    def get_fields_names(self):
-        """Return fields as list of string with field names."""
-        return map(lambda f: f.tag, self.get_fields())
-
-    def get_groups_names(self):
-        """Return fields as list of string with field names."""
-        return map(lambda g: g.tag, self.get_groups())
-
-    def _get_matching_elems(self, condition_func):
-        """Return elems that match condition"""
-        return ifilter(condition_func, self.get_all_elems())
-
-    @staticmethod
-    def _get_first_element(name):
-        def get_next_from_iterator(iterator):
-            try:
-                return next(iterator)
-            except StopIteration:
-                raise MissingFieldException("Element '{}' does not exist in "
-                                            "survey tree".format(name))
-        return get_next_from_iterator
-
-    def get_field(self, name):
-        """Get field in tree by name."""
-        matching_elems = self._get_matching_elems(lambda f: f.tag == name)
-        return self._get_first_element(name)(matching_elems)
-
-    @classmethod
-    def get_child_field(cls, element, name):
-        """Get child of element by name"""
-        return compose(
-            cls._get_first_element(name),
-            partial(ifilter, lambda f: f.tag == name),
-        )(element)
 
     def permanently_remove_field(self, field):
         """WARNING: It is not possible to revert this operation"""
@@ -90,7 +41,7 @@ class SurveyTree(XMLTree):
         """Find group named :group_name: or throw exception"""
         return compose(
             self._get_first_element(name),
-            partial(ifilter, lambda e: e.tag == name),
+            partial(ifilter, lambda e: self.field_tag(e) == name),
         )(self.get_groups())
 
     def insert_field_into_group_chain(self, field, group_chain):
@@ -109,3 +60,31 @@ class SurveyTree(XMLTree):
             parent = group_field
 
         parent.append(field)
+
+    def sort(self, xformtree):
+        """Sort XML tree fields according to the order provided by XFormTree"""
+        pattern = xformtree.get_el_by_path(xformtree.DATA_STRUCT_PATH)[0]
+        self._sort(self.root, pattern)
+
+    @staticmethod
+    def get_order(tree, pattern):
+        """Get order according to which fields in XML should be sorted"""
+        LAST_FIELDS = ['imei', 'meta']
+        order = XFormTree.children_tags(pattern)
+        # Put other fields into order list
+        order += [e.tag for e in tree if e.tag not in order]
+        for field in LAST_FIELDS:  # Ensure LAST_FIELDS are in the end of XML
+            order.remove(field) if field in order else None
+        order += LAST_FIELDS
+        return order
+
+    @classmethod
+    def _sort(cls, tree, pattern):
+        order = cls.get_order(tree, pattern)
+
+        for el in ifilter(lambda e: e.tag in cls.children_tags(pattern), tree):
+            cls._sort(el, cls.get_child_field(pattern, el.tag))
+
+        for el in sorted(tree, key=lambda e: order.index(e.tag)):
+            tree.remove(el)
+            tree.append(el)
