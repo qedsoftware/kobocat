@@ -41,7 +41,7 @@ def last_common_item(xs, ys):
     """Search for index of last common item in two lists."""
     max_i = min(len(xs), len(ys)) - 1
     for i, (x, y) in enumerate(zip(xs, ys)):
-        if x == y and (i == max_i or xs[i+1] != ys[i+1]):
+        if x == y and (i == max_i or xs[i + 1] != ys[i + 1]):
             return i
     return -1
 

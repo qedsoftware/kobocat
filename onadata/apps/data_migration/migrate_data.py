@@ -54,7 +54,7 @@ class DataMigrator(object):
 
     def save_survey(self, survey):
         survey.save()
-        survey.parsed_instance.save(async=True)
+        survey.parsed_instance.save(async=True)  # noqa: W606
 
 
 class SurveyFieldsHandler(object):

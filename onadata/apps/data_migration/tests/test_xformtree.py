@@ -131,4 +131,3 @@ class XFormTreeGroupsOperationsTestCase(CommonTestCase):
                         'math_degree', new_group]
         self.assertCountEqual(expected_prev, self.prev_tree.get_structured_fields())
         self.assertCountEqual(expected_new, self.new_tree.get_structured_fields())
-

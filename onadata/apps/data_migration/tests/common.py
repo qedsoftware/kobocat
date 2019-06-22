@@ -57,11 +57,11 @@ class CommonTestCase(TestCase):
         cmp_tails = lambda e1, e2: (
             remove_whitespaces(e1.tail or '') != remove_whitespaces(e2.tail or '')
         )
-        if e1.tag != e2.tag: return False, get_msg(e1, e2, 'tag')
-        if e1.text != e2.text: return False, get_msg(e1, e2, 'text')
-        if cmp_tails(e1, e2): return False, get_msg(e1, e2, 'tail')
-        if e1.attrib != e2.attrib: return False, get_msg(e1, e2, 'attrib')
-        if len(e1) != len(e2): return False, "len({}) != len({})".format(str(e1), str(e2))
+        if e1.tag != e2.tag: return False, get_msg(e1, e2, 'tag')  # noqa
+        if e1.text != e2.text: return False, get_msg(e1, e2, 'text')  # noqa
+        if cmp_tails(e1, e2): return False, get_msg(e1, e2, 'tail')  # noqa
+        if e1.attrib != e2.attrib: return False, get_msg(e1, e2, 'attrib')  # noqa
+        if len(e1) != len(e2): return False, "len({}) != len({})".format(str(e1), str(e2))  # noqa
 
         for c1, c2 in zip(sort_elems(e1), sort_elems(e2)):
             are_equal, info = cls._are_trees_isomorphic(c1, c2)

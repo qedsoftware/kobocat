@@ -115,11 +115,11 @@ class MigrationDecisionerUnitTests(MigrationTestCase):
         prev_fields_groups = self.migration_decisioner\
             .prev_fields_groups_migrated()
         self.assertEqual({
-          'first_name': [],
-          'gender': [],
-          'photo': [],
-          'age': [],
-          'location': [],
+            'first_name': [],
+            'gender': [],
+            'photo': [],
+            'age': [],
+            'location': [],
         }, prev_fields_groups)
 
     def test_changed_fields_groups(self):
@@ -129,7 +129,6 @@ class MigrationDecisionerUnitTests(MigrationTestCase):
             'birthday': [],
             'last_name': [],
         }, changed_fields_groups)
-
 
 
 class GroupedMigrationDecisionerUnitTests(GroupedMigrationTestCase):

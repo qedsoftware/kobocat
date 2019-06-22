@@ -149,7 +149,6 @@ class MigrationDecisioner(object):
         return self.xforms_comparator.fields_groups_prev()
 
     def changed_fields_groups(self):
-        fields_changes = self.fields_changes
         fields_groups_new = self.fields_groups_new()
         migrated_fields_groups_prev = self.prev_fields_groups_migrated()
         return {

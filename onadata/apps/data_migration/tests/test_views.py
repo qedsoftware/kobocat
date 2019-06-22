@@ -1,4 +1,3 @@
-from unittest import skip
 from mock import patch
 
 from django.test import Client
@@ -80,7 +79,7 @@ class MigrationViewsTests(MigrationTestCase):
         url = reverse('migrate-xform-data',
                       kwargs=self.get_data__both_id_strings())
         response = self.client.post(url, self.get_migration_decisions())
-        self.assertEqual(response.status_code,  302)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(XForm.objects.count(), 1)
         self.assertEqual(Instance.objects.count(), 1)
 
@@ -92,4 +91,4 @@ class MigrationViewsTests(MigrationTestCase):
         response = self.client.post(url, {'restore_last': True})
 
         restore_backup_mock.assert_called_once()
-        self.assertEqual(response.status_code,  200)
+        self.assertEqual(response.status_code, 200)

@@ -53,8 +53,5 @@ class TestTree(TestCase):
             'a_parents': ['root'],
         }, {
             'c31_parents': self.tree.extract_ancestors_labels(self.c31_node),
-            'a_parents': self.tree.extract_ancestors_labels(
-                    self.tree.find_child_by_label('a')
-            )
+            'a_parents': self.tree.extract_ancestors_labels(self.tree.find_child_by_label('a'))
         })
-
