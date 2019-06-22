@@ -109,3 +109,10 @@ class SurveyTree(XMLTree):
                 cls._remove_duplicates(prev_el)
             prev_el = next_el
         cls._remove_duplicates(next_el)
+
+    def remove_version(self):
+        try:
+            version_element = self.get_child_field(self.root, '__version__')
+            self.root.remove(version_element)
+        except MissingFieldException:
+            pass

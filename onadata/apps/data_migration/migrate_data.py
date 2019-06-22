@@ -68,6 +68,7 @@ class SurveyFieldsHandler(object):
         self.modify_fields(survey_tree, self.decisioner.modifications)
         self.migrate_groups(survey_tree)
         survey_tree.remove_duplicates()
+        survey_tree.remove_version()
 
     def add_fields(self, survey_tree, new_fields_tags):
         for field_to_add_tag in new_fields_tags:

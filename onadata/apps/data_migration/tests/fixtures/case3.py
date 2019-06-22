@@ -164,6 +164,7 @@ survey_template_3 = '''<SurveyGroups xmlns:jr="http://openrosa.org/javarosa" xml
   <end_time>2016-01-01T18:33:03.000+03:00</end_time>
   <today>2016-01-01</today>
   <imei>example.com:d123das</imei>
+  <__version__>xyz</__version__>
   <meta>
     <instanceID>uuid:{instance_uuid}</instanceID>
   </meta>

@@ -1,3 +1,4 @@
+import re
 from lxml import etree
 
 from onadata.apps.data_migration.xformtree import XFormTree
@@ -289,6 +290,7 @@ class SurveyTreeWithGroupsOperationsTest(CommonTestCase):
         for field, groups in zip(fields, fields_groups):
             self.survey_prev.insert_field_into_group_chain(field, groups)
 
-        expected_xml = self.survey_prev.to_string()\
+        actual_xml = self.survey_prev.to_string()\
             .replace('TestGroup', 'AlgebraicTypes2')
-        self.assertXMLsEqual(expected_xml, fixtures.survey_xml_groups_after__second)
+        actual_xml = re.sub(r"<__version__>.*</__version__>", "", actual_xml)
+        self.assertXMLsEqual(fixtures.survey_xml_groups_after__second, actual_xml)

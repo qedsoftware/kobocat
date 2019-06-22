@@ -96,7 +96,6 @@ survey_xml_groups_after = """
   <start>2017-11-10T17:57:48.000+01:00</start>
   <end>2017-11-10T18:00:02.000+01:00</end>
   
-  <__version__>vaEytJG3RWgRJMAuCnKWtC</__version__>
   <meta>
     <instanceID>uuid:ec5f2a1c-1cbd-49ac-8ab7-8be1ba33c14f</instanceID>
   </meta>
@@ -241,7 +240,6 @@ survey_xml_groups_after__second = """
   <math_degree>Ph.D</math_degree>
   <current_date>3.11.1971</current_date>
 
-  <__version__>vaEytJG3RWgRJMAuCnKWtC</__version__>
   <meta>
     <instanceID>uuid:ec5f2a1c-1cbd-49ac-8ab7-8be1ba33c14f</instanceID>
   </meta>
