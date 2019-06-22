@@ -1,9 +1,6 @@
 from onadata.apps.logger.models import Instance
-from onadata.apps.data_migration.models import (
-        BackupInstance, BackupXForm, XFormVersion)
-from onadata.apps.data_migration.backup_data import (
-    backup_xform, backup_survey
-)
+from onadata.apps.data_migration.models import BackupInstance, BackupXForm, XFormVersion
+from onadata.apps.data_migration.backup_data import backup_xform, backup_survey
 from .common import MigrationTestCase
 
 
@@ -56,7 +53,7 @@ class BackupSurveysTests(MigrationTestCase):
     def test_multiple_xform_backups(self):
         exp = [backup_xform(self.xform).backup_version for _ in range(10)]
         actual = BackupXForm.objects.filter(xform_id=self.xform.id)\
-                .values_list('backup_version', flat=True)
+            .values_list('backup_version', flat=True)
         self.assertCountEqual(exp, actual)
 
     def test_backup_survey(self):

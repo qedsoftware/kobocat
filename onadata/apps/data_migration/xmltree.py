@@ -69,7 +69,7 @@ class XMLTree(object):
         Example: '{http://www.w3.org/1999/xhtml}head'
         """
         header_end = tag.find('}')
-        return tag[header_end+1:] if header_end != -1 else tag
+        return tag[header_end + 1:] if header_end != -1 else tag
 
     @classmethod
     def field_tag(cls, field):

@@ -92,7 +92,7 @@ class DataMigratorIntegrationGroupsTestCase(test_case.GroupedMigrationTestCase):
         )
 
 
-class DataMigratorIntegrationSecondTestsCase(test_case.ThirdMigrationTestCase):
+class DataMigratorIntegrationThirdTestsCase(test_case.ThirdMigrationTestCase):
     def test_migration__third_case(self):
         self.data_migrator.migrate()
         self.xform_new.refresh_from_db()

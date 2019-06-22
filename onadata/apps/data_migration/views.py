@@ -92,9 +92,7 @@ def _update_xform(request, username, id_string, add_message=True):
         return {
             'type': 'alert-success',
             'text': _(u'Successfully updated %(form_id)s.'
-                      u' Please proceed now in data migration') % {
-                            'form_id': id_string,
-                        }
+                      u' Please proceed now in data migration') % {'form_id': id_string}
         }
     message = publish_form(set_form)
 

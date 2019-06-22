@@ -96,4 +96,3 @@ class CompareXMLWithGroupsTestCase(TestCase):
                 'current_date': [],
             }
         )
-

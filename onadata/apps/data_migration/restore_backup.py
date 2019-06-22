@@ -67,7 +67,7 @@ class BackupRestorer(object):
                                                 new_changes[MigrationDecisioner.RM_FIELDS_KEY]),
             modified=cls._transitive_merge(curr_changes[MigrationDecisioner.MOD_FIELDS_KEY],
                                            new_changes[MigrationDecisioner.MOD_FIELDS_KEY]),
-      )
+        )
 
     @staticmethod
     def _transitive_merge(curr_changes, new_changes):

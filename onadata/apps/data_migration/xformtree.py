@@ -114,7 +114,7 @@ class XFormTree(XMLTree):
         output: 'name'
         """
         nodeset = bind.attrib['nodeset']
-        return nodeset[nodeset.find('/', 2)+1:]
+        return nodeset[nodeset.find('/', 2) + 1:]
 
     def get_inputs_as_dict(self):
         """
@@ -129,7 +129,7 @@ class XFormTree(XMLTree):
 
     def get_input_name(self, input):
         ref = input.attrib['ref']
-        return ref[ref.find('/', 2)+1:]
+        return ref[ref.find('/', 2) + 1:]
 
     def get_id_string(self):
         return self.get_head_instance().attrib['id']
