@@ -4,7 +4,7 @@ from lxml import etree
 
 from .xmltree import XMLTree, MissingFieldException
 from .xformtree import XFormTree
-from .common import compose as C, concat_map
+from .common import compose, concat_map
 
 
 class SurveyTree(XMLTree):
@@ -36,7 +36,7 @@ class SurveyTree(XMLTree):
 
     def find_group(self, name):
         """Find group named :group_name: or throw exception"""
-        return C(
+        return compose(
             self._get_first_element(name),
             partial(ifilter, lambda e: self.field_tag(e) == name),
         )(self.get_groups())
@@ -84,7 +84,7 @@ class SurveyTree(XMLTree):
         for el in ifilter(elem_in_order, tree):
             cls._sort(el, cls.get_child_field(pattern, cls.field_tag(el)))
 
-        for el in sorted(tree, key=C(order.index, cls.field_tag)):
+        for el in sorted(tree, key=compose(order.index, cls.field_tag)):
             tree.remove(el)
             tree.append(el)
 
