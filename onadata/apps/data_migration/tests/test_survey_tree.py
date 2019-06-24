@@ -41,12 +41,12 @@ class SurveyTreeOperationsTest(CommonTestCase):
         self.survey.permanently_remove_field(field)
         self.assertEqual(self.survey.get_fields_names(), expected)
 
-    def test_change_field_tag(self):
+    def test_set_tag(self):
         expected = fixtures.FIELDS[:]
         pos = expected.index('name')
         expected[pos] = 'first_name'
         field = self.survey.get_field('name')
-        self.survey.change_field_tag(field, 'first_name')
+        self.survey.set_tag(field, 'first_name')
         self.assertEqual(self.survey.get_fields_names(), expected)
 
     def test_get_or_create_field(self):
@@ -155,7 +155,7 @@ class SurveyTreeOperationsTest(CommonTestCase):
     def test_sort(self):
         self.survey_3.sort(self.xformtree_3)
         self.assertXMLsEqual(self.survey_3.to_string(),
-                             fixtures.survey_3_after_migration_sorted)
+                             fixtures.survey_3_after_migration)
 
 
     def test_remove_duplicates(self):
@@ -293,4 +293,4 @@ class SurveyTreeWithGroupsOperationsTest(CommonTestCase):
         actual_xml = self.survey_prev.to_string()\
             .replace('TestGroup', 'AlgebraicTypes2')
         actual_xml = re.sub(r"<__version__>.*</__version__>", "", actual_xml)
-        self.assertXMLsEqual(fixtures.survey_xml_groups_after__second, actual_xml)
+        self.assertXMLsIsomorphic(fixtures.survey_xml_groups_after__second, actual_xml)

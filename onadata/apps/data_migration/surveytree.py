@@ -4,7 +4,7 @@ from lxml import etree
 
 from .xmltree import XMLTree, MissingFieldException
 from .xformtree import XFormTree
-from .common import compose, concat_map
+from .common import compose as C, concat_map
 
 
 class SurveyTree(XMLTree):
@@ -22,9 +22,6 @@ class SurveyTree(XMLTree):
         """WARNING: It is not possible to revert this operation"""
         field.getparent().remove(field)
 
-    def change_field_tag(self, field, new_tag):
-        field.tag = new_tag
-
     def set_field_attrib(self, field, attrib, new_value):
         field.attrib[attrib] = new_value
 
@@ -39,7 +36,7 @@ class SurveyTree(XMLTree):
 
     def find_group(self, name):
         """Find group named :group_name: or throw exception"""
-        return compose(
+        return C(
             self._get_first_element(name),
             partial(ifilter, lambda e: self.field_tag(e) == name),
         )(self.get_groups())
@@ -72,7 +69,7 @@ class SurveyTree(XMLTree):
         LAST_FIELDS = ['imei', 'meta']
         order = XFormTree.children_tags(pattern)
         # Put other fields into order list
-        order += [e.tag for e in tree if e.tag not in order]
+        order += filter(lambda t: t not in order, map(XMLTree.field_tag, tree))
         for field in LAST_FIELDS:  # Ensure LAST_FIELDS are in the end of XML
             order.remove(field) if field in order else None
         order += LAST_FIELDS
@@ -81,11 +78,13 @@ class SurveyTree(XMLTree):
     @classmethod
     def _sort(cls, tree, pattern):
         order = cls.get_order(tree, pattern)
+        pattern_tags = cls.children_tags(pattern)
+        elem_in_order = lambda e: cls.field_tag(e) in pattern_tags
 
-        for el in ifilter(lambda e: e.tag in cls.children_tags(pattern), tree):
-            cls._sort(el, cls.get_child_field(pattern, el.tag))
+        for el in ifilter(elem_in_order, tree):
+            cls._sort(el, cls.get_child_field(pattern, cls.field_tag(el)))
 
-        for el in sorted(tree, key=lambda e: order.index(e.tag)):
+        for el in sorted(tree, key=C(order.index, cls.field_tag)):
             tree.remove(el)
             tree.append(el)
 

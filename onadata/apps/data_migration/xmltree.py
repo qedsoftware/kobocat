@@ -32,6 +32,10 @@ class XMLTree(object):
         return etree.tostring(self.root, pretty_print=pretty,
                               xml_declaration=True, encoding='utf-8')
 
+    def set_tag(self, field, value):
+        cleaned_tag = self.field_tag(field)
+        field.tag = field.tag.replace(cleaned_tag, value)
+
     def get_fields(self):
         """Parse and return list of all fields in form."""
         return self.retrieve_leaf_elems(self.root)

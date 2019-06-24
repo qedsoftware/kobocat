@@ -175,42 +175,6 @@ survey_after_migration_template_3 = '''<SurveyGroups2 xmlns:jr="http://openrosa.
   <formhub>
     <uuid>{formhub_uuid}</uuid>
   </formhub>
-  <gender>male</gender>
-  <new_record_already_in_template__wrong_group>
-  </new_record_already_in_template__wrong_group>
-  <photo/>
-  <location>-1 1.1 1 2</location>
-  <redundant_group>
-  </redundant_group>
-  <thanks/>
-  <start_time>2016-01-01T18:32:20.000+03:00</start_time>
-  <end_time>2016-01-01T18:33:03.000+03:00</end_time>
-  <today>2016-01-01</today>
-  <imei>example.com:d123das</imei>
-  <meta>
-    <instanceID>uuid:{instance_uuid}</instanceID>
-  </meta>
-  <private>
-    <first_name>{name}</first_name>
-    <last_name/>
-  </private>
-  <group_1>
-    <group_2>
-      <group_3>
-        <date/>
-      </group_3>
-    </group_2>
-  </group_1>
-  <group_age>
-    <age>{age}</age>
-  </group_age>
-</SurveyGroups2>
-'''
-
-survey_after_migration_template_3_sorted = '''<SurveyGroups2 xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms/" id="SurveyGroups2">
-  <formhub>
-    <uuid>{formhub_uuid}</uuid>
-  </formhub>
   <private>
     <first_name>{name}</first_name>
     <last_name/>
@@ -253,6 +217,5 @@ _survey_data_3 = {
 
 survey_xml_3 = survey_template_3.format(**_survey_data_3)
 survey_3_after_migration = survey_after_migration_template_3.format(**_survey_data_3)
-survey_3_after_migration_sorted = survey_after_migration_template_3_sorted.format(**_survey_data_3)
 
 append_extra_data_3 = lambda survey, data: survey.replace('</SurveyGroups>', data + '</SurveyGroups>')

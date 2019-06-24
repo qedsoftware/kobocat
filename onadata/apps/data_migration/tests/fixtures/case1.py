@@ -145,60 +145,68 @@ form_xml_case_1_after = '''<?xml version="1.0" encoding="utf-8"?>
 
 survey_template = '''<Survey xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms/" id="Survey">
   <formhub>
-    <uuid>{}</uuid>
+    <uuid>{uuid}</uuid>
   </formhub>
-  <name>{}</name>
+  <name>{name}</name>
   <gender>male</gender>
   <photo/>
-  <date>{}</date>
+  <date>{date}</date>
   <location>-1 1.1 1 2</location>
-  <age>{}</age>
+  <age>{age}</age>
   <thanks/>
   <start_time>2016-01-01T18:32:20.000+03:00</start_time>
   <end_time>2016-01-01T18:33:03.000+03:00</end_time>
   <today>2016-01-01</today>
   <imei>example.com:d123das</imei>
   <meta>
-    <instanceID>uuid:{}</instanceID>
+    <instanceID>uuid:{instance_uuid}</instanceID>
   </meta>
 </Survey>
 '''
 
 survey_after_migration_template = '''<Survey2 xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms/" id="Survey2">
   <formhub>
-    <uuid>{}</uuid>
+    <uuid>{uuid}</uuid>
   </formhub>
-  <first_name>{}</first_name>
+  <first_name>{name}</first_name>
+  <last_name>Fowler</last_name>
+  <birthday/>
   <gender>male</gender>
   <photo/>
-  <date>{}</date>
+  <age>{age}</age>
   <location>-1 1.1 1 2</location>
-  <age>{}</age>
+  <date>{date}</date>
   <thanks/>
   <start_time>2016-01-01T18:32:20.000+03:00</start_time>
   <end_time>2016-01-01T18:33:03.000+03:00</end_time>
   <today>2016-01-01</today>
   <imei>example.com:d123das</imei>
   <meta>
-    <instanceID>uuid:{}</instanceID>
+    <instanceID>uuid:{instance_uuid}</instanceID>
   </meta>
-  <last_name>Fowler</last_name>
-  <birthday/>
 </Survey2>
 '''
 
 
-_first_survey_data = (
-    '123abc', 'Alonzo Church', '2000-01-01', '50', 'das-d123-dsa-dsa-dsa'
-)
-_second_survey_data = (
-    '456asd', 'Richard Feynman', '1988-02-15', '70', 'qwe-ert-yui-opa-sdf'
-)
+_first_survey_data = {
+    'uuid': '123abc',
+    'name': 'Alonzo Church',
+    'date': '2000-01-01',
+    'age': '50',
+    'instance_uuid': 'das-d123-dsa-dsa-dsa',
+}
+_second_survey_data = {
+    'uuid': '456asd',
+    'name': 'Richard Feynman',
+    'date': '1988-02-15',
+    'age': '70',
+    'instance_uuid':'qwe-ert-yui-opa-sdf',
+}
 
-survey_xml = survey_template.format(*_first_survey_data)
-survey_xml_second = survey_template.format(*_second_survey_data)
+survey_xml = survey_template.format(**_first_survey_data)
+survey_xml_second = survey_template.format(**_second_survey_data)
 
-survey_after_migration = survey_after_migration_template.format(*_first_survey_data)
-survey_after_migration_second = survey_after_migration_template.format(*_second_survey_data)
+survey_after_migration = survey_after_migration_template.format(**_first_survey_data)
+survey_after_migration_second = survey_after_migration_template.format(**_second_survey_data)
 
 append_extra_data = lambda survey, data: survey.replace('</Survey>', data + '</Survey>')

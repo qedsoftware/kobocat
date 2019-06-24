@@ -54,12 +54,13 @@ class CommonTestCase(TestCase):
                 e1=str(e1), e2=str(e2), attr=attr,
                 e1_attr=getattr(e1, attr), e2_attr=getattr(e2, attr)),
         )
-        cmp_tails = lambda e1, e2: (
-            remove_whitespaces(e1.tail or '') != remove_whitespaces(e2.tail or '')
+        cmp_vals = lambda e1, e2, attr: (
+            remove_whitespaces(getattr(e1, attr) or '') != \
+            remove_whitespaces(getattr(e2, attr) or '')
         )
         if e1.tag != e2.tag: return False, get_msg(e1, e2, 'tag')
-        if e1.text != e2.text: return False, get_msg(e1, e2, 'text')
-        if cmp_tails(e1, e2): return False, get_msg(e1, e2, 'tail')
+        if cmp_vals(e1, e2, 'text'): return False, get_msg(e1, e2, 'text')
+        if cmp_vals(e1, e2, 'tail'): return False, get_msg(e1, e2, 'tail')
         if e1.attrib != e2.attrib: return False, get_msg(e1, e2, 'attrib')
         if len(e1) != len(e2): return False, "len({}) != len({})".format(str(e1), str(e2))
 

@@ -20,12 +20,6 @@ class XFormTree(XMLTree):
         except IndexError:
             return None
 
-    def set_tag(self, tag_name, value):
-        el = self.find_element_in_tree(tag_name)
-        cleaned_tag = self.field_tag(el)
-        el.tag = el.tag.replace(cleaned_tag, value)
-        return el
-
     def get_head_content(self):
         """XML Heads content."""
         return self.root[0][1]
@@ -151,7 +145,7 @@ class XFormTree(XMLTree):
     def rename_head_tag(self, name):
         instance = self.get_head_instance()
         instance.attrib['id'] = name
-        self.set_tag(instance.tag, name)
+        self.set_tag(instance, name)
 
     def _replace_in_nodeset_paths(self, old_val, new_val):
         bind_nodesets = self.get_head_binds()

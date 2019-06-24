@@ -35,7 +35,7 @@ class DataMigrator(object):
     @staticmethod
     def set_proper_root_node(xform, survey_tree):
         new_root_id = xform.id_string
-        survey_tree.change_field_tag(survey_tree.root, new_root_id)
+        survey_tree.set_tag(survey_tree.root, new_root_id)
         survey_tree.set_field_attrib(survey_tree.root, attrib='id',
                                      new_value=new_root_id)
 
@@ -67,6 +67,7 @@ class SurveyFieldsHandler(object):
         self.add_fields(survey_tree, self.decisioner.new_fields)
         self.modify_fields(survey_tree, self.decisioner.modifications)
         self.migrate_groups(survey_tree)
+        survey_tree.sort(self.xformtree)
         survey_tree.remove_duplicates()
         survey_tree.remove_version()
 
@@ -84,7 +85,7 @@ class SurveyFieldsHandler(object):
         for prev_tag, new_tag in modifications.iteritems():
             groups = self.decisioner.fields_groups_new().get(prev_tag, [])
             field = survey_tree.get_or_create_field(prev_tag, groups=groups)
-            survey_tree.change_field_tag(field, new_tag)
+            survey_tree.set_tag(field, new_tag)
 
     def migrate_groups(self, survey_tree):
         changed_fields_groups = self.decisioner.changed_fields_groups()

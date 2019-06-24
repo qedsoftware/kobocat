@@ -216,7 +216,7 @@ class BackupRestoreSecondTestCase(CommonBackupRestoreTestCase,
             self.xform_new.xml,
             fixtures.form_xml_case_2.replace('tutorial', 'tutorial2'),
         )
-        self.assertEqualIgnoringWhitespaces(
+        self.assertXMLsIsomorphic(
             self.xform_new.instances.first().xml,
             self._append_survey_data(fixtures.survey_xml_2),
         )
