@@ -1,3 +1,6 @@
+from collections import defaultdict
+from itertools import chain
+
 
 class Tree(object):
     def __init__(self, label='root', parent=None, children=None):

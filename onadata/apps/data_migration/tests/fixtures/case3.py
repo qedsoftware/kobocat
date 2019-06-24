@@ -147,9 +147,9 @@ form_xml_case_3_after = '''<?xml version="1.0" encoding="utf-8"?>
 
 survey_template_3 = '''<SurveyGroups xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms/" id="SurveyGroups">
   <formhub>
-    <uuid>{}</uuid>
+    <uuid>{formhub_uuid}</uuid>
   </formhub>
-  <name>{}</name>
+  <name>{name}</name>
   <gender>male</gender>
   <new_record_already_in_template__wrong_group>
     <date/>
@@ -157,28 +157,43 @@ survey_template_3 = '''<SurveyGroups xmlns:jr="http://openrosa.org/javarosa" xml
   <photo/>
   <location>-1 1.1 1 2</location>
   <redundant_group>
-    <age>{}</age>
+    <age>{age}</age>
   </redundant_group>
   <thanks/>
   <start_time>2016-01-01T18:32:20.000+03:00</start_time>
   <end_time>2016-01-01T18:33:03.000+03:00</end_time>
   <today>2016-01-01</today>
   <imei>example.com:d123das</imei>
+  <__version__>xyz</__version__>
   <meta>
-    <instanceID>uuid:{}</instanceID>
+    <instanceID>uuid:{instance_uuid}</instanceID>
   </meta>
 </SurveyGroups>
 '''
 
 survey_after_migration_template_3 = '''<SurveyGroups2 xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms/" id="SurveyGroups2">
   <formhub>
-    <uuid>{}</uuid>
+    <uuid>{formhub_uuid}</uuid>
   </formhub>
+  <private>
+    <first_name>{name}</first_name>
+    <last_name/>
+  </private>
   <gender>male</gender>
+  <photo/>
+  <group_age>
+    <age>{age}</age>
+  </group_age>
+  <group_1>
+    <group_2>
+      <group_3>
+        <date/>
+      </group_3>
+    </group_2>
+  </group_1>
+  <location>-1 1.1 1 2</location>
   <new_record_already_in_template__wrong_group>
   </new_record_already_in_template__wrong_group>
-  <photo/>
-  <location>-1 1.1 1 2</location>
   <redundant_group>
   </redundant_group>
   <thanks/>
@@ -187,30 +202,20 @@ survey_after_migration_template_3 = '''<SurveyGroups2 xmlns:jr="http://openrosa.
   <today>2016-01-01</today>
   <imei>example.com:d123das</imei>
   <meta>
-    <instanceID>uuid:{}</instanceID>
+    <instanceID>uuid:{instance_uuid}</instanceID>
   </meta>
-  <private>
-    <first_name>{}</first_name>
-    <last_name/>
-  </private>
-  <group_1>
-    <group_2>
-      <group_3>
-        <date/>
-      </group_3>
-    </group_2>
-  </group_1>
-  <group_age>
-    <age>{}</age>
-  </group_age>
 </SurveyGroups2>
 '''
 
 
-_survey_data_3 = ('123abc', 'Kurt Godel', '50', 'das-d123-dsa-dsa-dsa')
-_survey_after_migration_data_3 = ('123abc', 'das-d123-dsa-dsa-dsa', 'Kurt Godel', '50')
+_survey_data_3 = {
+    'formhub_uuid': '123abc',
+    'name': 'Kurt Godel',
+    'age': '50',
+    'instance_uuid': 'das-d123-dsa-dsa-dsa',
+}
 
-survey_xml_3 = survey_template_3.format(*_survey_data_3)
-survey_3_after_migration = survey_after_migration_template_3.format(*_survey_after_migration_data_3)
+survey_xml_3 = survey_template_3.format(**_survey_data_3)
+survey_3_after_migration = survey_after_migration_template_3.format(**_survey_data_3)
 
 append_extra_data_3 = lambda survey, data: survey.replace('</SurveyGroups>', data + '</SurveyGroups>')

@@ -1,6 +1,13 @@
+import re
+from functools import partial
+from itertools import ifilter
 from lxml import etree
 
-from .common import concat_map
+from .common import concat_map, compose
+
+
+class MissingFieldException(Exception):
+    pass
 
 
 class XMLTree(object):
@@ -25,6 +32,37 @@ class XMLTree(object):
         return etree.tostring(self.root, pretty_print=pretty,
                               xml_declaration=True, encoding='utf-8')
 
+    def set_tag(self, field, value):
+        cleaned_tag = self.field_tag(field)
+        field.tag = field.tag.replace(cleaned_tag, value)
+
+    def get_fields(self):
+        """Parse and return list of all fields in form."""
+        return self.retrieve_leaf_elems(self.root)
+
+    def get_groups(self):
+        return concat_map(self.retrieve_groups, self.root.getchildren())
+
+    def get_all_elems(self):
+        """Return a list of both groups and fields"""
+        return concat_map(self.retrieve_all_elems, self.root.getchildren())
+
+    def get_fields_names(self):
+        """Return fields as list of string with field names."""
+        return map(lambda f: f.tag, self.get_fields())
+
+    def get_groups_names(self):
+        """Return fields as list of string with field names."""
+        return map(lambda g: g.tag, self.get_groups())
+
+    def _get_matching_elems(self, condition_func):
+        """Return elems that match condition"""
+        return ifilter(condition_func, self.get_all_elems())
+
+    @staticmethod
+    def is_leaf(element):
+        return len(element.getchildren()) == 0
+
     @classmethod
     def retrieve_leaf_elems(cls, element):
         if not cls.is_relevant(element.tag):
@@ -32,6 +70,37 @@ class XMLTree(object):
         if element.getchildren():
             return concat_map(cls.retrieve_leaf_elems, element)
         return [element]
+
+    @staticmethod
+    def _get_first_element(name):
+        def get_next_from_iterator(iterator):
+            try:
+                return next(iterator)
+            except StopIteration:
+                raise MissingFieldException("Element '{}' does not exist in "
+                                            "xml tree".format(name))
+        return get_next_from_iterator
+
+    def get_field(self, name):
+        """Get field in tree by name."""
+        cond = lambda f: self.field_tag(f) == name
+        matching_elems = self._get_matching_elems(cond)
+        return self._get_first_element(name)(matching_elems)
+
+    @classmethod
+    def get_child_field(cls, element, name):
+        """Get child of element by name"""
+        return compose(
+            cls._get_first_element(name),
+            partial(ifilter, lambda f: cls.field_tag(f) == name),
+        )(element)
+
+    @classmethod
+    def children_tags(cls, element):
+        return map(cls.field_tag, element)
+
+    def get_el_by_path(self, path):
+        return reduce(self.get_child_field, path, self.root)
 
     @classmethod
     def retrieve_leaf_elems_tags(cls, element):
@@ -74,3 +143,8 @@ class XMLTree(object):
     @classmethod
     def field_tag(cls, field):
         return cls.clean_tag(field.tag)
+
+    @classmethod
+    def are_elements_equal(cls, e1, e2):
+        to_str = lambda el: re.sub(r"\s+", "", etree.tostring(el))
+        return to_str(e1) == to_str(e2)

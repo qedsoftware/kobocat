@@ -83,9 +83,9 @@ class XFormTreeOperationsTestCase(TestCase):
         self.assertTrue(self.prev_tree.to_string())
 
     def test_set_tag(self):
-        tag_name = self.prev_tree.get_head_instance().tag
+        field = self.prev_tree.get_head_instance()
         new_tag_name = 'Survey2'
-        self.prev_tree.set_tag(tag_name, new_tag_name)
+        self.prev_tree.set_tag(field, new_tag_name)
         self.assertEqual(
             self.prev_tree.clean_tag(self.prev_tree.get_head_instance().tag),
             new_tag_name

@@ -203,10 +203,10 @@ survey_2_after_migration = '''<tutorial2 xmlns:jr="http://openrosa.org/javarosa"
   <has_children>0</has_children>
   <gps>0.000001 0.000001 0 0</gps>
   <web_browsers>chrome</web_browsers>
+  <mood>good</mood>
   <meta>
     <instanceID>uuid:fc9eebf7-49f2-4857-b51f-bf0e385a53f5</instanceID>
   </meta>
-  <mood>good</mood>
 </tutorial2>
 '''
 

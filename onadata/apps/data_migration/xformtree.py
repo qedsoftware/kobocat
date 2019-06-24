@@ -11,18 +11,14 @@ class XFormTree(XMLTree):
     xls forms: http://xlsform.org/
     w3c xforms: https://www.w3.org/MarkUp/Forms/#waXForms
     """
+    DATA_STRUCT_PATH = ["head", "model", "instance"]
+
     def find_element_in_tree(self, searched_tag):
         query = "//*[local-name()='%s']" % self.clean_tag(searched_tag)
         try:
             return self.root.xpath(query)[0]
         except IndexError:
             return None
-
-    def set_tag(self, tag_name, value):
-        el = self.find_element_in_tree(tag_name)
-        cleaned_tag = self.field_tag(el)
-        el.tag = el.tag.replace(cleaned_tag, value)
-        return el
 
     def get_head_content(self):
         """XML Heads content."""
@@ -149,7 +145,7 @@ class XFormTree(XMLTree):
     def rename_head_tag(self, name):
         instance = self.get_head_instance()
         instance.attrib['id'] = name
-        self.set_tag(instance.tag, name)
+        self.set_tag(instance, name)
 
     def _replace_in_nodeset_paths(self, old_val, new_val):
         bind_nodesets = self.get_head_binds()

@@ -89,23 +89,21 @@ survey_xml_groups_before = """
 
 survey_xml_groups_after = """
 <groups2 xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" id="groups2" version="vaEytJG3RWgRJMAuCnKWtC">
-  <formhub>
-    <uuid>30760c2faa6c498a83f0c6a7ff761f83</uuid>
-  </formhub>
-  
   <start>2017-11-10T17:57:48.000+01:00</start>
   <end>2017-11-10T18:00:02.000+01:00</end>
-  
-  <__version__>vaEytJG3RWgRJMAuCnKWtC</__version__>
-  <meta>
-    <instanceID>uuid:ec5f2a1c-1cbd-49ac-8ab7-8be1ba33c14f</instanceID>
-  </meta>
 
   <group_transformations>
     <isomorphism/>
     <homomorphism>identity</homomorphism>
   </group_transformations>
-  
+
+  <formhub>
+    <uuid>30760c2faa6c498a83f0c6a7ff761f83</uuid>
+  </formhub>
+
+  <meta>
+    <instanceID>uuid:ec5f2a1c-1cbd-49ac-8ab7-8be1ba33c14f</instanceID>
+  </meta>
 </groups2>
 """
 
@@ -232,19 +230,8 @@ survey_xml_groups_before__second = """
 
 survey_xml_groups_after__second = """
 <AlgebraicTypes2 xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" id="AlgebraicTypes2" version="vkvxz56QzsTUnnJvSQDj4R">
-  <formhub>
-    <uuid>30760c2faa6c498a83f0c6a7ff761f83</uuid>
-  </formhub>
   <start>2017-11-10T17:57:48.000+01:00</start>
   <end>2017-11-10T18:00:02.000+01:00</end>
-  
-  <math_degree>Ph.D</math_degree>
-  <current_date>3.11.1971</current_date>
-
-  <__version__>vaEytJG3RWgRJMAuCnKWtC</__version__>
-  <meta>
-    <instanceID>uuid:ec5f2a1c-1cbd-49ac-8ab7-8be1ba33c14f</instanceID>
-  </meta>
 
   <group_transformations>
     <bijective>
@@ -256,6 +243,16 @@ survey_xml_groups_after__second = """
     </bijective>
     <endomorphism>f: G -&gt; G</endomorphism>
   </group_transformations>
- 
+
+  <math_degree>Ph.D</math_degree>
+  <current_date>3.11.1971</current_date>
+  <formhub>
+    <uuid>30760c2faa6c498a83f0c6a7ff761f83</uuid>
+  </formhub>
+
+  <meta>
+    <instanceID>uuid:ec5f2a1c-1cbd-49ac-8ab7-8be1ba33c14f</instanceID>
+  </meta>
+
 </AlgebraicTypes2>
 """
