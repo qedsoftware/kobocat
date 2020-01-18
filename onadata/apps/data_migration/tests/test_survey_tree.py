@@ -27,6 +27,10 @@ class SurveyTreeOperationsTest(CommonTestCase):
         self.assertTrue(etree.iselement(self.survey.get_field('name')))
         self.assertTrue(etree.iselement(self.survey.get_field('photo')))
 
+    def test_get_field(self):
+        self.assertTrue(etree.iselement(self.survey.get_field('name')))
+        self.assertTrue(etree.iselement(self.survey.get_field('photo')))
+
     def test_get_field__no_such_field(self):
         with self.assertRaises(MissingFieldException):
             self.survey.get_field('i_am_sure_no_such_field_exist')
@@ -217,9 +221,30 @@ class SurveyTreeWithGroupsOperationsTest(CommonTestCase):
         with self.assertRaises(MissingFieldException):
             self.survey.find_group('certainly_no_such_group_exist')
 
-    def test_get_all_elems(self):
-        self.assertCountEqual(fixtures.GROUPS_FIELDS_AFTER,
-                              [e.tag for e in self.survey.get_all_elems()])
+    def test_retrieve_all_elems__tags_only(self):
+        self.assertCountEqual(fixtures.GROUPS_FIELDS_AFTER + ['AlgebraicTypes2'],
+                              [e[0].tag for e in self.survey.retrieve_all_elems(self.survey.root)])
+
+    def test_retrieve_all_elems(self):
+        survey = SurveyTree('''
+            <AlgebraicTypes>
+                <functor>
+                    <applicative>
+                        <monad>Either</monad>
+                    </applicative>
+                    <foldable/>
+                </functor>
+            </AlgebraicTypes>
+        ''')
+        result = [
+            ('AlgebraicTypes', []),
+            ('functor', ['AlgebraicTypes']),
+            ('applicative', ['AlgebraicTypes', 'functor']),
+            ('foldable', ['AlgebraicTypes', 'functor']),
+            ('monad', ['AlgebraicTypes', 'functor', 'applicative']),
+        ]
+        self.assertCountEqual(result,
+                              [(e[0].tag, e[1]) for e in survey.retrieve_all_elems(survey.root)])
 
     def test_insert_field_into_group_chain(self):
         survey = SurveyTree('<AlgebraicTypes></AlgebraicTypes>')

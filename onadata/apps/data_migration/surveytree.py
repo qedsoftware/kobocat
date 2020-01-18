@@ -58,6 +58,10 @@ class SurveyTree(XMLTree):
 
         parent.append(field)
 
+    def update_field_contents(self, field_name, new_text):
+        field = self.get_field(field_name)
+        field.text = new_text
+
     def sort(self, xformtree):
         """Sort XML tree fields according to the order provided by XFormTree"""
         pattern = xformtree.get_el_by_path(xformtree.DATA_STRUCT_PATH)[0]
