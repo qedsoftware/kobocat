@@ -1,5 +1,10 @@
-from functools import reduce
+from functools import reduce, partial
 from operator import add
+
+
+mapc = lambda x: partial(map, x)
+
+fst = lambda x: x[0]
 
 
 def concat_map(f, iterable):

@@ -1,9 +1,10 @@
 import re
+from operator import not_
 from functools import partial
 from itertools import ifilter
 from lxml import etree
 
-from .common import concat_map, compose
+from .common import concat_map, compose, fst
 
 
 class MissingFieldException(Exception):
@@ -38,14 +39,10 @@ class XMLTree(object):
 
     def get_fields(self):
         """Parse and return list of all fields in form."""
-        return self.retrieve_leaf_elems(self.root)
+        return map(fst, self.retrieve_leaf_elems(self.root))
 
     def get_groups(self):
         return concat_map(self.retrieve_groups, self.root.getchildren())
-
-    def get_all_elems(self):
-        """Return a list of both groups and fields"""
-        return concat_map(self.retrieve_all_elems, self.root.getchildren())
 
     def get_fields_names(self):
         """Return fields as list of string with field names."""
@@ -57,19 +54,11 @@ class XMLTree(object):
 
     def _get_matching_elems(self, condition_func):
         """Return elems that match condition"""
-        return ifilter(condition_func, self.get_all_elems())
+        return ifilter(condition_func, self.retrieve_all_elems(self.root))
 
     @staticmethod
     def is_leaf(element):
         return len(element.getchildren()) == 0
-
-    @classmethod
-    def retrieve_leaf_elems(cls, element):
-        if not cls.is_relevant(element.tag):
-            return []
-        if element.getchildren():
-            return concat_map(cls.retrieve_leaf_elems, element)
-        return [element]
 
     @staticmethod
     def _get_first_element(name):
@@ -81,11 +70,15 @@ class XMLTree(object):
                                             "xml tree".format(name))
         return get_next_from_iterator
 
-    def get_field(self, name):
-        """Get field in tree by name."""
-        cond = lambda f: self.field_tag(f) == name
+    def get_field_with_path(self, name):
+        """Get field along with path in tree by name."""
+        cond = lambda field: self.field_tag(field[0]) == name
         matching_elems = self._get_matching_elems(cond)
         return self._get_first_element(name)(matching_elems)
+
+    def get_field(self, name):
+        """Get field in tree by name."""
+        return compose(fst, self.get_field_with_path)(name)
 
     @classmethod
     def get_child_field(cls, element, name):
@@ -103,20 +96,31 @@ class XMLTree(object):
         return reduce(self.get_child_field, path, self.root)
 
     @classmethod
+    def retrieve_elems(cls, path, base_cond, element):
+        if not cls.is_relevant(element.tag):
+            return []
+
+        new_elem = [(element, path)] if base_cond(element) else []
+        new_path = path+[cls.clean_tag(element.tag)]
+        induction_step = partial(cls.retrieve_elems, new_path, base_cond)
+        return new_elem + concat_map(induction_step, element)
+
+    @classmethod
+    def retrieve_leaf_elems(cls, element):
+        return cls.retrieve_elems([], cls.is_leaf, element)
+
+    @classmethod
     def retrieve_leaf_elems_tags(cls, element):
-        return map(cls.field_tag, cls.retrieve_leaf_elems(element))
+        return map(compose(cls.field_tag, fst), cls.retrieve_leaf_elems(element))
 
     @classmethod
     def retrieve_groups(cls, element):
-        if not cls.is_relevant(element.tag) or not element.getchildren():
-            return []
-        return [element] + concat_map(cls.retrieve_groups, element)
+        cond = compose(not_, cls.is_leaf)
+        return map(fst, cls.retrieve_elems([], cond, element))
 
     @classmethod
     def retrieve_all_elems(cls, element):
-        if not cls.is_relevant(element.tag):
-            return []
-        return [element] + concat_map(cls.retrieve_all_elems, element)
+        return cls.retrieve_elems([], lambda _: True, element)
 
     @classmethod
     def is_relevant(cls, tag):
@@ -148,3 +152,7 @@ class XMLTree(object):
     def are_elements_equal(cls, e1, e2):
         to_str = lambda el: re.sub(r"\s+", "", etree.tostring(el))
         return to_str(e1) == to_str(e2)
+
+    def _get_matching_leafs(self, condition_func):
+        """Return elems that match condition"""
+        return ifilter(condition_func, self.retrieve_leaf_elems(self.root))
