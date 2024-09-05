@@ -67,6 +67,15 @@ class QedRemoteUserAttributeMiddleware(object):
 
     @staticmethod
     def process_roles(user, roles_json):
+        logger = logging.getLogger("console_logger")
+
+        if roles_json is None:
+            if settings.USE_REMOTE_PERMS:
+                raise RuntimeError("Remote perms enabled, but header not found")
+
+            logger.info("[perms_dry_run] Roles header not found")
+            return
+
         # KT__${var.kt_form_id}__${var.kt_form_permission}
         roles = json.loads(roles_json)
 
@@ -88,7 +97,6 @@ class QedRemoteUserAttributeMiddleware(object):
             to_add = target_perms - current_perms
 
             if len(to_remove) + len(to_add) > 0:
-                logger = logging.getLogger("console_logger")
                 logger.info("[{}] User {}, form {} ({}). Remove: {}, add: {}".format(
                     "perms" if settings.USE_REMOTE_PERMS else "perms_dry_run",
                     user.username,
