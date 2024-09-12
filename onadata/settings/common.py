@@ -200,6 +200,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 USE_REMOTE_PERMS = os.getenv("USE_REMOTE_PERMS", "False") == "True"
+REMOTE_PERMS_DRY_RUN = os.getenv("REMOTE_PERMS_DRY_RUN", "True") == "True"
 
 if os.getenv("USE_REMOTE_AUTH", "False") == "True":
     MIDDLEWARE_CLASSES += (
