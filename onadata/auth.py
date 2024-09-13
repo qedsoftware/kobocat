@@ -124,7 +124,7 @@ class QedRemoteUserAttributeMiddleware(object):
 
             if len(to_remove) + len(to_add) > 0:
                 logger.info("[{}] User {}, form {} ({}). Remove: {}, add: {}".format(
-                    "perms_dry_run" if settings.USE_REMOTE_PERMS else "perms",
+                    "perms_dry_run" if settings.REMOTE_PERMS_DRY_RUN else "perms",
                     user.username,
                     xform.title,
                     xform.id_string,
